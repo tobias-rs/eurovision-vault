@@ -414,8 +414,7 @@
             
             <div class="search-container">
                 <div class="input-wrapper">
-                    <input type="text" id="yearInput" placeholder="Enter a year (1956-2024)">
-                    <svg class="icon calendar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                    <input type="number" id="yearInput" placeholder="Enter a year (1956-2024)" min="1956" max="2024" inputmode="numeric">                    <svg class="icon calendar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
                 </div>
                 <button id="searchButton">
                     <svg class="icon search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -464,6 +463,12 @@
             const winnerContainer = document.getElementById('winnerContainer');
             const allWinnersContainer = document.getElementById('allWinnersContainer');
             const winnersList = document.getElementById('winnersList');
+            
+            // Sanitize year input to only allow digits
+            function sanitizeYearInput(input) {
+                // Remove all non-numeric characters
+                return input.replace(/[^0-9]/g, '').substring(0, 4);
+            }
             
             // State
             let loading = false;
@@ -605,8 +610,9 @@
                 winnerContainer.innerHTML = '';
                 
                 if (loading) return;
-                
-                const year = yearInput.value.trim();
+
+                // Get and sanitize the year input
+                const year = sanitizeYearInput(yearInput.value.trim());
                 
                 if (!year) {
                     showError('Please enter a year');
