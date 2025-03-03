@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eurovision Vault</title>
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(to bottom, #e6f0ff, #ead6ff);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        /* Container and card styles */
+        .container {
+            max-width: 28rem;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        /* Header styles */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4338ca;
+            text-align: center;
+            margin: 0 0.5rem;
+        }
+
+        /* Icon styles */
+        .icon {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .trophy-icon {
+            color: #eab308;
+        }
+
+        .music-icon {
+            color: #ec4899;
+        }
+
+        .calendar-icon {
+            color: #9ca3af;
+        }
+
+        .search-icon {
+            color: white;
+            margin-right: 0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .list-icon {
+            color: #4338ca;
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .user-icon, .mic-icon {
+            color: #6b7280;
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Search container styles */
+        .search-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            padding-left: 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            outline: none;
+            font-size: 0.875rem;
+        }
+
+        input:focus {
+            border-color: #4338ca;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Button styles */
+        button {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            font-size: 0.875rem;
+        }
+
+        #searchButton {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        #searchButton:hover {
+            background-color: #4338ca;
+        }
+
+        #searchButton:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+        }
+
+        #toggleButton {
+            width: calc(100% - 3rem);
+            background-color: #e0e7ff;
+            color: #4338ca;
+            margin: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        #toggleButton:hover {
+            background-color: #c7d2fe;
+        }
+
+        /* Error container styles */
+        .error-container {
+            display: none;
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #b91c1c;
+            padding: 1rem;
+            margin: 0 1.5rem 1rem 1.5rem;
+            border-radius: 0.25rem;
+        }
+
+        /* Winner container styles */
+        .winner-container {
+            padding: 0 1.5rem;
+        }
+
+        .winner-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #6366f1;
+            transition: box-shadow 0.2s;
+        }
+
+        .winner-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .winner-year {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .winner-year .icon {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.25rem;
+        }
+
+        .tied-badge {
+            margin-left: 0.5rem;
+            font-size: 0.75rem;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+        }
+
+        .country-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .country-flag {
+            font-size: 2rem;
+            margin-right: 0.75rem;
+        }
+
+        .country-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #312e81;
+            margin: 0;
+        }
+
+        .artist-container, .song-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .artist-name {
+            color: #4338ca;
+            font-weight: 500;
+        }
+
+        .song-name {
+            color: #4f46e5;
+            font-style: italic;
+        }
+
+        /* All winners container styles */
+        .all-winners-container {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .all-winners-container h2 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #3730a3;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .all-winners-container h2 .icon {
+            margin-right: 0.5rem;
+        }
+
+        .winners-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 24rem;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .winner-item {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-left: 3px solid #a5b4fc;
+            transition: border-color 0.2s;
+        }
+
+        .winner-item:hover {
+            border-color: #6366f1;
+        }
+
+        .winner-item-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .winner-item-year {
+            margin-right: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: #4338ca;
+            min-width: 2.5rem;
+        }
+
+        .winner-item-flag {
+            font-size: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+        .winner-item-details {
+            flex: 1;
+        }
+
+        .winner-item-country {
+            font-weight: 500;
+            color: #312e81;
+        }
+
+        .winner-item-artist-song {
+            font-size: 0.875rem;
+            color: #4338ca;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #e0e7ff;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6366f1;
+            border-radius: 0 0 0.75rem 0.75rem;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Country background colors */
+        .bg-austria { background-color: #fee2e2; }
+        .bg-azerbaijan { background-color: #dbeafe; }
+        .bg-belgium { background-color: #fef3c7; }
+        .bg-denmark { background-color: #fee2e2; }
+        .bg-estonia { background-color: #dbeafe; }
+        .bg-finland { background-color: #dbeafe; }
+        .bg-france { background-color: #dbeafe; }
+        .bg-germany { background-color: #fef3c7; }
+        .bg-greece { background-color: #dbeafe; }
+        .bg-ireland { background-color: #dcfce7; }
+        .bg-israel { background-color: #dbeafe; }
+        .bg-italy { background-color: #dcfce7; }
+        .bg-latvia { background-color: #fee2e2; }
+        .bg-luxembourg { background-color: #dbeafe; }
+        .bg-monaco { background-color: #fee2e2; }
+        .bg-netherlands { background-color: #ffedd5; }
+        .bg-norway { background-color: #fee2e2; }
+        .bg-portugal { background-color: #dcfce7; }
+        .bg-russia { background-color: #dbeafe; }
+        .bg-serbia { background-color: #fee2e2; }
+        .bg-spain { background-color: #fef3c7; }
+        .bg-sweden { background-color: #dbeafe; }
+        .bg-switzerland { background-color: #fee2e2; }
+        .bg-turkey { background-color: #fee2e2; }
+        .bg-ukraine { background-color: #dbeafe; }
+        .bg-united-kingdom { background-color: #dbeafe; }
+        .bg-yugoslavia { background-color: #dbeafe; }
+        .bg-none { background-color: #f3f4f6; }
+        .bg-default { background-color: #e0e7ff; }
+
+        /* Scrollbar styles */
+        .winners-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .winners-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .winners-list::-webkit-scrollbar-thumb {
+            background: #a5b4fc;
+            border-radius: 10px;
+        }
+
+        .winners-list::-webkit-scrollbar-thumb:hover {
+            background: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <svg class="icon trophy-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                <h1>Eurovision Vault</h1>
+                <svg class="icon music-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="18" r="4"/><path d="M12 18V2l7 4"/></svg>
+            </div>
+            
+            <div class="search-container">
+                <div class="input-wrapper">
+                    <input type="text" id="yearInput" placeholder="Enter a year (1956-2024)">
+                    <svg class="icon calendar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                </div>
+                <button id="searchButton">
+                    <svg class="icon search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <span id="searchText">Find</span>
+                </button>
+            </div>
+            
+            <button id="toggleButton">
+                <svg class="icon list-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+                <span id="toggleText">Show All Winners</span>
+            </button>
+            
+            <div id="errorContainer" class="error-container">
+                <!-- Error messages will appear here -->
+            </div>
+            
+            <div id="winnerContainer" class="winner-container">
+                <!-- Winner results will appear here -->
+            </div>
+            
+            <div id="allWinnersContainer" class="all-winners-container">
+                <h2>
+                    <svg class="icon trophy-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    All Eurovision Winners (1956-2024)
+                </h2>
+                <div id="winnersList" class="winners-list">
+                    <!-- All winners list will appear here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Data includes all Eurovision Song Contest winners from 1956 to 2024</p>
+        </div>
+    </div>
+
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const yearInput = document.getElementById('yearInput');
+            const searchButton = document.getElementById('searchButton');
+            const toggleButton = document.getElementById('toggleButton');
+            const toggleText = document.getElementById('toggleText');
+            const errorContainer = document.getElementById('errorContainer');
+            const winnerContainer = document.getElementById('winnerContainer');
+            const allWinnersContainer = document.getElementById('allWinnersContainer');
+            const winnersList = document.getElementById('winnersList');
+            
+            // State
+            let loading = false;
+            let showAllWinners = false;
+            
+            // Eurovision winners database
+            const escWinners = [
+                { year: 1956, country: "Switzerland", artist: "Lys Assia", song: "Refrain" },
+                { year: 1957, country: "Netherlands", artist: "Corry Brokken", song: "Net als toen" },
+                { year: 1958, country: "France", artist: "André Claveau", song: "Dors, mon amour" },
+                { year: 1959, country: "Netherlands", artist: "Teddy Scholten", song: "Een beetje" },
+                { year: 1960, country: "France", artist: "Jacqueline Boyer", song: "Tom Pillibi" },
+                { year: 1961, country: "Luxembourg", artist: "Jean-Claude Pascal", song: "Nous les amoureux" },
+                { year: 1962, country: "France", artist: "Isabelle Aubret", song: "Un premier amour" },
+                { year: 1963, country: "Denmark", artist: "Grethe & Jørgen Ingmann", song: "Dansevise" },
+                { year: 1964, country: "Italy", artist: "Gigliola Cinquetti", song: "Non ho l'età" },
+                { year: 1965, country: "Luxembourg", artist: "France Gall", song: "Poupée de cire, poupée de son" },
+                { year: 1966, country: "Austria", artist: "Udo Jürgens", song: "Merci, Chérie" },
+                { year: 1967, country: "United Kingdom", artist: "Sandie Shaw", song: "Puppet on a String" },
+                { year: 1968, country: "Spain", artist: "Massiel", song: "La, la, la" },
+                { year: 1969, country: "Spain", artist: "Salomé", song: "Vivo cantando" },
+                { year: 1969, country: "United Kingdom", artist: "Lulu", song: "Boom Bang-a-Bang" },
+                { year: 1969, country: "Netherlands", artist: "Lenny Kuhr", song: "De troubadour" },
+                { year: 1969, country: "France", artist: "Frida Boccara", song: "Un jour, un enfant" },
+                { year: 1970, country: "Ireland", artist: "Dana", song: "All Kinds of Everything" },
+                { year: 1971, country: "Monaco", artist: "Séverine", song: "Un banc, un arbre, une rue" },
+                { year: 1972, country: "Luxembourg", artist: "Vicky Leandros", song: "Après toi" },
+                { year: 1973, country: "Luxembourg", artist: "Anne-Marie David", song: "Tu te reconnaîtras" },
+                { year: 1974, country: "Sweden", artist: "ABBA", song: "Waterloo" },
+                { year: 1975, country: "Netherlands", artist: "Teach-In", song: "Ding-a-dong" },
+                { year: 1976, country: "United Kingdom", artist: "Brotherhood of Man", song: "Save Your Kisses for Me" },
+                { year: 1977, country: "France", artist: "Marie Myriam", song: "L'oiseau et l'enfant" },
+                { year: 1978, country: "Israel", artist: "Izhar Cohen & the Alphabeta", song: "A-Ba-Ni-Bi" },
+                { year: 1979, country: "Israel", artist: "Milk and Honey", song: "Hallelujah" },
+                { year: 1980, country: "Ireland", artist: "Johnny Logan", song: "What's Another Year" },
+                { year: 1981, country: "United Kingdom", artist: "Bucks Fizz", song: "Making Your Mind Up" },
+                { year: 1982, country: "Germany", artist: "Nicole", song: "Ein bißchen Frieden" },
+                { year: 1983, country: "Luxembourg", artist: "Corinne Hermès", song: "Si la vie est cadeau" },
+                { year: 1984, country: "Sweden", artist: "Herreys", song: "Diggi-Loo Diggi-Ley" },
+                { year: 1985, country: "Norway", artist: "Bobbysocks", song: "La det swinge" },
+                { year: 1986, country: "Belgium", artist: "Sandra Kim", song: "J'aime la vie" },
+                { year: 1987, country: "Ireland", artist: "Johnny Logan", song: "Hold Me Now" },
+                { year: 1988, country: "Switzerland", artist: "Céline Dion", song: "Ne partez pas sans moi" },
+                { year: 1989, country: "Yugoslavia", artist: "Riva", song: "Rock Me" },
+                { year: 1990, country: "Italy", artist: "Toto Cutugno", song: "Insieme: 1992" },
+                { year: 1991, country: "Sweden", artist: "Carola", song: "Fångad av en stormvind" },
+                { year: 1992, country: "Ireland", artist: "Linda Martin", song: "Why Me?" },
+                { year: 1993, country: "Ireland", artist: "Niamh Kavanagh", song: "In Your Eyes" },
+                { year: 1994, country: "Ireland", artist: "Paul Harrington & Charlie McGettigan", song: "Rock 'n' Roll Kids" },
+                { year: 1995, country: "Norway", artist: "Secret Garden", song: "Nocturne" },
+                { year: 1996, country: "Ireland", artist: "Eimear Quinn", song: "The Voice" },
+                { year: 1997, country: "United Kingdom", artist: "Katrina and the Waves", song: "Love Shine a Light" },
+                { year: 1998, country: "Israel", artist: "Dana International", song: "Diva" },
+                { year: 1999, country: "Sweden", artist: "Charlotte Nilsson", song: "Take Me to Your Heaven" },
+                { year: 2000, country: "Denmark", artist: "Olsen Brothers", song: "Fly on the Wings of Love" },
+                { year: 2001, country: "Estonia", artist: "Tanel Padar, Dave Benton & 2XL", song: "Everybody" },
+                { year: 2002, country: "Latvia", artist: "Marie N", song: "I Wanna" },
+                { year: 2003, country: "Turkey", artist: "Sertab Erener", song: "Everyway That I Can" },
+                { year: 2004, country: "Ukraine", artist: "Ruslana", song: "Wild Dances" },
+                { year: 2005, country: "Greece", artist: "Helena Paparizou", song: "My Number One" },
+                { year: 2006, country: "Finland", artist: "Lordi", song: "Hard Rock Hallelujah" },
+                { year: 2007, country: "Serbia", artist: "Marija Šerifović", song: "Molitva" },
+                { year: 2008, country: "Russia", artist: "Dima Bilan", song: "Believe" },
+                { year: 2009, country: "Norway", artist: "Alexander Rybak", song: "Fairytale" },
+                { year: 2010, country: "Germany", artist: "Lena", song: "Satellite" },
+                { year: 2011, country: "Azerbaijan", artist: "Ell & Nikki", song: "Running Scared" },
+                { year: 2012, country: "Sweden", artist: "Loreen", song: "Euphoria" },
+                { year: 2013, country: "Denmark", artist: "Emmelie de Forest", song: "Only Teardrops" },
+                { year: 2014, country: "Austria", artist: "Conchita Wurst", song: "Rise Like a Phoenix" },
+                { year: 2015, country: "Sweden", artist: "Måns Zelmerlöw", song: "Heroes" },
+                { year: 2016, country: "Ukraine", artist: "Jamala", song: "1944" },
+                { year: 2017, country: "Portugal", artist: "Salvador Sobral", song: "Amar pelos dois" },
+                { year: 2018, country: "Israel", artist: "Netta", song: "Toy" },
+                { year: 2019, country: "Netherlands", artist: "Duncan Laurence", song: "Arcade" },
+                { year: 2020, country: "None", artist: "None", song: "Contest cancelled due to COVID-19 pandemic" },
+                { year: 2021, country: "Italy", artist: "Måneskin", song: "Zitti e buoni" },
+                { year: 2022, country: "Ukraine", artist: "Kalush Orchestra", song: "Stefania" },
+                { year: 2023, country: "Sweden", artist: "Loreen", song: "Tattoo" },
+                { year: 2024, country: "Switzerland", artist: "Nemo", song: "The Code" }
+            ];
+            
+            // Get country flag emoji
+            function getCountryFlag(countryName) {
+                const flagEmojis = {
+                    'Austria': '🇦🇹',
+                    'Azerbaijan': '🇦🇿',
+                    'Belgium': '🇧🇪',
+                    'Denmark': '🇩🇰',
+                    'Estonia': '🇪🇪',
+                    'Finland': '🇫🇮',
+                    'France': '🇫🇷',
+                    'Germany': '🇩🇪',
+                    'Greece': '🇬🇷',
+                    'Ireland': '🇮🇪',
+                    'Israel': '🇮🇱',
+                    'Italy': '🇮🇹',
+                    'Latvia': '🇱🇻',
+                    'Luxembourg': '🇱🇺',
+                    'Monaco': '🇲🇨',
+                    'Netherlands': '🇳🇱',
+                    'Norway': '🇳🇴',
+                    'Portugal': '🇵🇹',
+                    'Russia': '🇷🇺',
+                    'Serbia': '🇷🇸',
+                    'Spain': '🇪🇸',
+                    'Sweden': '🇸🇪',
+                    'Switzerland': '🇨🇭',
+                    'Turkey': '🇹🇷',
+                    'Ukraine': '🇺🇦',
+                    'United Kingdom': '🇬🇧',
+                    'Yugoslavia': '🇾🇺',
+                    'None': '🏳️'
+                };
+                
+                return flagEmojis[countryName] || '🏳️';
+            }
+            
+            // Get country CSS class for background color
+            function getCountryClass(countryName) {
+                // Convert country name to CSS class format
+                const cssName = countryName.toLowerCase().replace(/\s+/g, '-');
+                return `bg-${cssName}`;
+            }
+            
+            // Show error message
+            function showError(message) {
+                errorContainer.textContent = message;
+                errorContainer.style.display = 'block';
+            }
+            
+            // Hide error message
+            function hideError() {
+                errorContainer.style.display = 'none';
+            }
+            
+            // Search for winner by year
+            function findWinner() {
+                hideError();
+                winnerContainer.innerHTML = '';
+                
+                if (loading) return;
+                
+                const year = yearInput.value.trim();
+                
+                if (!year) {
+                    showError('Please enter a year');
+                    return;
+                }
+                
+                const yearNum = parseInt(year);
+                
+                if (isNaN(yearNum)) {
+                    showError('Please enter a valid year');
+                    return;
+                }
+                
+                if (yearNum < 1956) {
+                    showError('Eurovision Song Contest started in 1956');
+                    return;
+                }
+                
+                if (yearNum > 2024) {
+                    showError('Data only available up to 2024');
+                    return;
+                }
+                
+                // Set loading state
+                loading = true;
+                searchButton.innerHTML = '<div class="spinner"></div><span>Searching...</span>';
+                
+                // Simulate a small delay for better UX
+                setTimeout(() => {
+                    const winners = escWinners.filter(w => w.year === yearNum);
+                    
+                    if (winners.length === 0) {
+                        showError(`No winner found for ${yearNum}`);
+                    } else {
+                        renderWinners(winners);
+                    }
+                    
+                    // Reset loading state
+                    loading = false;
+                    searchButton.innerHTML = '<svg class="icon search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Find</span>';
+                }, 300);
+            }
+            
+            // Render winner(s) in the winner container
+            function renderWinners(winners) {
+                winnerContainer.innerHTML = '';
+                
+                winners.forEach(winner => {
+                    const winnerCard = document.createElement('div');
+                    winnerCard.className = `winner-card ${getCountryClass(winner.country)}`;
+                    
+                    // Create year display with year, trophy and calendar icons
+                    const yearElem = document.createElement('div');
+                    yearElem.className = 'winner-year';
+                    yearElem.innerHTML = `
+                        <svg class="icon trophy-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                        <svg class="icon calendar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                        ${winner.year}
+                    `;
+                    
+                    // Add tied winner badge for 1969
+                    if (winner.year === 1969) {
+                        const tiedBadge = document.createElement('span');
+                        tiedBadge.className = 'tied-badge';
+                        tiedBadge.textContent = 'Tied Winner';
+                        yearElem.appendChild(tiedBadge);
+                    }
+                    
+                    // Create country display with flag and name
+                    const countryElem = document.createElement('div');
+                    countryElem.className = 'country-container';
+                    countryElem.innerHTML = `
+                        <span class="country-flag">${getCountryFlag(winner.country)}</span>
+                        <h3 class="country-name">${winner.country}</h3>
+                    `;
+                    
+                    // Create artist display
+                    const artistElem = document.createElement('div');
+                    artistElem.className = 'artist-container';
+                    artistElem.innerHTML = `
+                        <svg class="icon user-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <div class="artist-name">${winner.artist}</div>
+                    `;
+                    
+                    // Create song display
+                    const songElem = document.createElement('div');
+                    songElem.className = 'song-container';
+                    songElem.innerHTML = `
+                        <svg class="icon mic-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                        <div class="song-name">"${winner.song}"</div>
+                    `;
+                    
+                    // Append all elements to winner card
+                    winnerCard.appendChild(yearElem);
+                    winnerCard.appendChild(countryElem);
+                    winnerCard.appendChild(artistElem);
+                    winnerCard.appendChild(songElem);
+                    
+                    // Add to container
+                    winnerContainer.appendChild(winnerCard);
+                });
+            }
+            
+            // Toggle showing all winners
+            function toggleAllWinners() {
+                showAllWinners = !showAllWinners;
+                
+                if (showAllWinners) {
+                    allWinnersContainer.style.display = 'block';
+                    toggleText.textContent = 'Hide All Winners';
+                    renderAllWinners();
+                } else {
+                    allWinnersContainer.style.display = 'none';
+                    toggleText.textContent = 'Show All Winners';
+                }
+                
+                // Clear previous results
+                winnerContainer.innerHTML = '';
+                yearInput.value = '';
+                hideError();
+            }
+            
+            // Render all winners in the list
+            function renderAllWinners() {
+                winnersList.innerHTML = '';
+                
+                escWinners.forEach(winner => {
+                    const winnerItem = document.createElement('div');
+                    winnerItem.className = `winner-item ${getCountryClass(winner.country)}`;
+                    
+                    const content = document.createElement('div');
+                    content.className = 'winner-item-content';
+                    
+                    content.innerHTML = `
+                        <div class="winner-item-year">${winner.year}</div>
+                        <div class="winner-item-flag">${getCountryFlag(winner.country)}</div>
+                        <div class="winner-item-details">
+                            <div class="winner-item-country">${winner.country}</div>
+                            <div class="winner-item-artist-song">${winner.artist} - <span class="italic">"${winner.song}"</span></div>
+                        </div>
+                    `;
+                    
+                    winnerItem.appendChild(content);
+                    winnersList.appendChild(winnerItem);
+                });
+            }
+            
+            // Event Listeners
+            searchButton.addEventListener('click', findWinner);
+            
+            yearInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    findWinner();
+                }
+            });
+            
+            toggleButton.addEventListener('click', toggleAllWinners);
+        });
+    </script>
+</body>
+</html>
