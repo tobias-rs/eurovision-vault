@@ -401,6 +401,136 @@
         .winners-list::-webkit-scrollbar-thumb:hover {
             background: #6366f1;
         }
+        /* Video modal styles */
+        .video-button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .video-button:hover {
+            background-color: #4338ca;
+        }
+
+        .video-icon {
+            color: white;
+            margin-right: 0.5rem;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.75rem;
+            max-width: 100%;
+            width: 650px;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #3730a3;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close-button:hover {
+            color: #1f2937;
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .no-video-message {
+            padding: 2rem;
+            text-align: center;
+            color: #6b7280;
+        }
+        .tied-winners-container {
+            padding: 1rem;
+            background-color: #f9fafb;
+            border-radius: 0.25rem;
+            margin-top: 1rem;
+        }
+
+        .tied-winner-btn {
+            background-color: #e0e7ff;
+            color: #4338ca;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .tied-winner-btn:hover {
+            background-color: #c7d2fe;
+        }
+
+        .tied-winners-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -442,6 +572,28 @@
                 </h2>
                 <div id="winnersList" class="winners-list">
                     <!-- All winners list will appear here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Video Modal -->
+        <!-- Video Modal -->
+        <div id="videoModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="modalTitle">Eurovision Performance</div>
+                    <button class="close-button" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="videoContainer" class="video-container">
+                        <!-- Video iframe will be inserted here -->
+                    </div>
+                    <div id="tiedWinnersContainer" class="tied-winners-container" style="display: none;">
+                        <div class="tied-winners-title">All tied winners from 1969:</div>
+                        <div id="tiedWinnerButtons">
+                            <!-- Tied winner buttons will be inserted here -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -549,6 +701,86 @@
                 { year: 2023, country: "Sweden", artist: "Loreen", song: "Tattoo" },
                 { year: 2024, country: "Switzerland", artist: "Nemo", song: "The Code" }
             ];
+            
+            // Eurovision winners' performance videos database (1990-2024)
+            const performanceVideos = {
+                1956: "https://www.youtube.com/embed/AJv7uqLJ-RM",
+                1957: "https://www.youtube.com/embed/TDA5MAfGG-M",
+                1958: "https://www.youtube.com/embed/IRFx_hYx4I8",
+                1959: "https://www.youtube.com/embed/xaEskI58tAM",
+                1960: "https://www.youtube.com/embed/oX_hlMchXvc",
+                1961: "https://www.youtube.com/embed/i87Vm2BOXL4",
+                1962: "https://www.youtube.com/embed/0MmMhWB-SX0",
+                1963: "https://www.youtube.com/embed/M56QJVv_TJI",
+                1964: "https://www.youtube.com/embed/Utd9cHBPfRA",
+                1965: "https://www.youtube.com/embed/PyFnDf8PvmU",
+                1966: "https://www.youtube.com/embed/QE4IcCql8QA",
+                1967: "https://www.youtube.com/embed/Ga1kMdJCc_Q",
+                1968: "https://www.youtube.com/embed/JhPAZOwEY0I",
+                1969: {
+                       "Spain": "https://www.youtube.com/embed/POj0U2W6MnE",
+                       "United Kingdom": "https://www.youtube.com/embed/DtdesZPmkDI",
+                       "Netherlands": "https://www.youtube.com/embed/P1GbrVB0DM0",
+                       "France": "https://www.youtube.com/embed/27YMkBlba68"
+                   },
+                   
+                   // 1970-1989
+                1970: "https://www.youtube.com/embed/sZ8W9oOgjM4",
+                1971: "https://www.youtube.com/embed/bbOYslkGIrk",
+                1972: "https://www.youtube.com/embed/52W1665yI1Y",
+                1973: "https://www.youtube.com/embed/9vYgc3ViGFA",
+                1974: "https://www.youtube.com/embed/KDF8hUjPy5k",
+                1975: "https://www.youtube.com/embed/BPxuq4uQ0OU",
+                1976: "https://www.youtube.com/embed/EFO-H4rBPoA",
+                1977: "https://www.youtube.com/embed/XQG8dtWClc8",
+                1978: "https://www.youtube.com/embed/PNY2QjKRXJk",
+                1979: "https://www.youtube.com/embed/w4D_taYMVP8",
+                1980: "https://www.youtube.com/embed/R7k1DH71bO8",
+                1981: "https://www.youtube.com/embed/S8ecUpszQac",
+                1982: "https://www.youtube.com/embed/hp_b-095yPc",
+                1983: "https://www.youtube.com/embed/C6uKNJ8nS3o",
+                1984: "https://www.youtube.com/embed/ySOCalwr6Yo",
+                1985: "https://www.youtube.com/embed/U94_AErNBZU",
+                1986: "https://www.youtube.com/embed/AT3c41gi3B4",
+                1987: "https://www.youtube.com/embed/gl2yKH5zbyo",
+                1988: "https://www.youtube.com/embed/VXLWfXmlXPc",
+                1989: "https://www.youtube.com/embed/ZWwmCT7P3VE",
+                1990: "https://www.youtube.com/embed/RenJw-pewvU",
+                1991: "https://www.youtube.com/embed/4Ml6pJqc_bw",
+                1992: "https://www.youtube.com/embed/oTPtDFxQgn4",
+                1993: "https://www.youtube.com/embed/Q60dg5w602o",
+                1994: "https://www.youtube.com/embed/DBbF2ZHMeog",
+                1995: "https://www.youtube.com/embed/6qqOI04uo_c",
+                1996: "https://www.youtube.com/embed/2qK0tZZ-FZI",
+                1997: "https://www.youtube.com/embed/KwLBCKA5-ls",
+                1998: "https://www.youtube.com/embed/exwKl7HNhM0",
+                1999: "https://www.youtube.com/embed/u0xypjODpY4",
+                2000: "https://www.youtube.com/embed/UGdJBxVthXU",
+                2001: "https://www.youtube.com/embed/92TSUlqzFi8",
+                2002: "https://www.youtube.com/embed/_M-w89U8TEU",
+                2003: "https://www.youtube.com/embed/j0_QrKnqd5E",
+                2004: "https://www.youtube.com/embed/10XR67NQcAc",
+                2005: "https://www.youtube.com/embed/fENsBrXpvxE",
+                2006: "https://www.youtube.com/embed/gAh9NRGNhUU",
+                2007: "https://www.youtube.com/embed/vWj58UP_ENY",
+                2008: "https://www.youtube.com/embed/ay7Ush-U48k",
+                2009: "https://www.youtube.com/embed/0gGt2qUyFlk",
+                2010: "https://www.youtube.com/embed/7pL9vdpSvnY",
+                2011: "https://www.youtube.com/embed/_0tlQUW5X0U",
+                2012: "https://www.youtube.com/embed/bcnWysA9gxo",
+                2013: "https://www.youtube.com/embed/QxVWcDevKLg",
+                2014: "https://www.youtube.com/embed/SaolVEJEjV4",
+                2015: "https://www.youtube.com/embed/-nbq6Ur103Q",
+                2016: "https://www.youtube.com/embed/oxS6eKEOdLQ",
+                2017: "https://www.youtube.com/embed/Qotooj7ODCM",
+                2018: "https://www.youtube.com/embed/PXHZTXoMBec",
+                2019: "https://www.youtube.com/embed/R3D-r4ogr7s",
+                2020: null, // No video for 2020 (cancelled)
+                2021: "https://www.youtube.com/embed/RVH5dn1cxAQ",
+                2022: "https://www.youtube.com/embed/uiE7LNZRsk0",
+                2023: "https://www.youtube.com/embed/Vul5zgC5Yvg",
+                2024: "https://www.youtube.com/embed/E_uQggU0Eec"
+            };
             
             // Get country flag emoji
             function getCountryFlag(countryName) {
@@ -711,6 +943,18 @@
                     winnerCard.appendChild(artistElem);
                     winnerCard.appendChild(songElem);
                     
+                    // Add "Watch Performance" button for all years except 2020 (cancelled)
+                    if (winner.year !== 2020 || winner.year === 2020 && winner.country !== "None") {
+                        const videoBtn = document.createElement('button');
+                        videoBtn.className = 'video-button';
+                        videoBtn.innerHTML = `
+                            <svg class="icon video-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 4.5 11.5 7.5-11.5 7.5z"/><circle cx="5" cy="12" r="2.5"/></svg>
+                            Watch Performance
+                        `;
+                        videoBtn.addEventListener('click', () => showPerformanceVideo(winner));
+                        winnerCard.appendChild(videoBtn);
+                    }
+                    
                     // Add to container
                     winnerContainer.appendChild(winnerCard);
                 });
@@ -746,8 +990,14 @@
                     const content = document.createElement('div');
                     content.className = 'winner-item-content';
                     
+                    // Add tied badge for 1969
+                    let tiedBadge = '';
+                    if (winner.year === 1969) {
+                        tiedBadge = '<span class="tied-badge" style="font-size: 0.7rem; margin-left: 0.25rem;">Tied</span>';
+                    }
+                    
                     content.innerHTML = `
-                        <div class="winner-item-year">${winner.year}</div>
+                        <div class="winner-item-year">${winner.year}${tiedBadge}</div>
                         <div class="winner-item-flag">${getCountryFlag(winner.country)}</div>
                         <div class="winner-item-details">
                             <div class="winner-item-country">${winner.country}</div>
@@ -755,14 +1005,147 @@
                         </div>
                     `;
                     
+                    // Add video icon button for years with videos
+                    if (winner.year !== 2020 || (winner.year === 2020 && winner.country !== "None")) {
+                        const videoIcon = document.createElement('div');
+                        videoIcon.style.cursor = 'pointer';
+                        videoIcon.style.color = '#4338ca';
+                        videoIcon.style.marginLeft = '0.5rem';
+                        videoIcon.innerHTML = `
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 4.5 11.5 7.5-11.5 7.5z"/><circle cx="5" cy="12" r="2.5"/></svg>
+                        `;
+                        videoIcon.title = "Watch Performance";
+                        videoIcon.addEventListener('click', () => showPerformanceVideo(winner));
+                        content.appendChild(videoIcon);
+                    }
+                    
                     winnerItem.appendChild(content);
                     winnersList.appendChild(winnerItem);
                 });
             }
             
+            // Show performance video in modal
+            function showPerformanceVideo(winner) {
+                const videoModal = document.getElementById('videoModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const videoContainer = document.getElementById('videoContainer');
+                const tiedWinnersContainer = document.getElementById('tiedWinnersContainer');
+                const tiedWinnerButtons = document.getElementById('tiedWinnerButtons');
+                
+                // Reset containers
+                tiedWinnersContainer.style.display = 'none';
+                
+                // Special handling for 1969 (four tied winners)
+                if (winner.year === 1969) {
+                    const videoUrl = performanceVideos[1969][winner.country];
+                    
+                    if (!videoUrl) {
+                        videoContainer.innerHTML = `
+                            <div class="no-video-message">
+                                No performance video available for ${winner.country} (${winner.year}).
+                            </div>
+                        `;
+                    } else {
+                        videoContainer.innerHTML = `
+                            <iframe 
+                                width="560" 
+                                height="315" 
+                                src="${videoUrl}" 
+                                title="${winner.year} Eurovision Winner - ${winner.artist} - ${winner.song}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen>
+                            </iframe>
+                        `;
+                    }
+                    
+                    // Show other tied winners
+                    tiedWinnersContainer.style.display = 'block';
+                    tiedWinnerButtons.innerHTML = '';
+                    
+                    // Find all 1969 winners
+                    const tiedWinners = escWinners.filter(w => w.year === 1969 && w.country !== winner.country);
+                    
+                    // Create buttons for each tied winner
+                    tiedWinners.forEach(tiedWinner => {
+                        const btn = document.createElement('button');
+                        btn.className = 'tied-winner-btn';
+                        btn.innerHTML = `${getCountryFlag(tiedWinner.country)} ${tiedWinner.country}`;
+                        btn.addEventListener('click', () => {
+                            // Update video
+                            const tiedVideoUrl = performanceVideos[1969][tiedWinner.country];
+                            videoContainer.innerHTML = `
+                                <iframe 
+                                    width="560" 
+                                    height="315" 
+                                    src="${tiedVideoUrl}" 
+                                    title="${tiedWinner.year} Eurovision Winner - ${tiedWinner.artist} - ${tiedWinner.song}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                    allowfullscreen>
+                                </iframe>
+                            `;
+                            
+                            // Update modal title
+                            modalTitle.textContent = `${tiedWinner.year} - ${tiedWinner.artist} - "${tiedWinner.song}"`;
+                        });
+                        
+                        tiedWinnerButtons.appendChild(btn);
+                    });
+                } else {
+                    // Regular year with one winner
+                    const videoUrl = performanceVideos[winner.year];
+                    
+                    if (!videoUrl) {
+                        videoContainer.innerHTML = `
+                            <div class="no-video-message">
+                                No performance video available for ${winner.year}.
+                            </div>
+                        `;
+                    } else {
+                        videoContainer.innerHTML = `
+                            <iframe 
+                                width="560" 
+                                height="315" 
+                                src="${videoUrl}" 
+                                title="${winner.year} Eurovision Winner - ${winner.artist} - ${winner.song}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen>
+                            </iframe>
+                        `;
+                    }
+                }
+                
+                // Set the modal title
+                modalTitle.textContent = `${winner.year} - ${winner.artist} - "${winner.song}"`;
+                
+                // Show the modal
+                videoModal.style.display = 'flex';
+                
+                // Add event listener to close when clicking outside
+                videoModal.addEventListener('click', function(event) {
+                    if (event.target === videoModal) {
+                        closeVideoModal();
+                    }
+                });
+            }
+
+            // Close the video modal
+            function closeVideoModal() {
+                const videoModal = document.getElementById('videoModal');
+                const videoContainer = document.getElementById('videoContainer');
+                
+                // Hide the modal
+                videoModal.style.display = 'none';
+                
+                // Clear the video to stop playback
+                videoContainer.innerHTML = '';
+            }
+            
             // Event Listeners
             searchButton.addEventListener('click', findWinner);
-            
+            document.getElementById('closeModal').addEventListener('click', closeVideoModal);
             yearInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     findWinner();
@@ -774,3 +1157,4 @@
     </script>
 </body>
 </html>
+
